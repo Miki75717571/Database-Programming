@@ -1,0 +1,163 @@
+-–add new user with validation
+
+CREATE OR REPLACE PROCEDURE AddNewUser(
+    p_Email IN NVARCHAR2,
+    p_Password IN NVARCHAR2,
+    p_Phone IN NVARCHAR2,
+    p_FirstName IN NVARCHAR2,
+    p_LastName IN NVARCHAR2
+)
+IS
+    v_Count INT;
+BEGIN
+    -- Check if the email already exists
+    SELECT COUNT(*)
+    INTO v_Count
+    FROM Users
+    WHERE Email = p_Email;
+
+    IF v_Count > 0 THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Email already exists');
+    ELSE
+        -- Insert the new user
+        INSERT INTO Users (Email, Password, Phone, FirstName, LastName)
+        VALUES (p_Email, p_Password, p_Phone, p_FirstName, p_LastName);
+    END IF;
+END;/
+
+-–update book info
+
+CREATE OR REPLACE PROCEDURE UpdateBookInfo(
+    p_BookID IN INT,
+    p_Title IN NVARCHAR2,
+    p_ReleaseDate IN DATE,
+    p_ISBN IN NVARCHAR2
+)
+IS
+    v_Count INT;
+BEGIN
+    -- Check if the book exists
+    SELECT COUNT(*)
+    INTO v_Count
+    FROM Books
+    WHERE BookID = p_BookID;
+
+    IF v_Count = 0 THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Book ID does not exist');
+    ELSE UPDATE Books
+        SET Title = p_Title, ReleaseDate = p_ReleaseDate, ISBN = p_ISBN
+        WHERE BookID = p_BookID;
+    END IF;
+END;/
+
+-–Procedure to Reserve a Book
+
+CREATE OR REPLACE PROCEDURE ReserveBook (
+    p_UserID IN INT,
+    p_BookID IN INT,
+    p_RentalDate IN DATE,
+    p_ExpirationDate IN DATE
+) IS
+    v_BookCount INT;
+BEGIN
+    -- Check if the book is already reserved
+    SELECT COUNT(*)
+    INTO v_BookCount
+    FROM Reservations
+    WHERE BookID = p_BookID AND ReturnDate IS NULL;
+
+    IF v_BookCount > 0 THEN
+        RAISE_APPLICATION_ERROR(-20003, 'The book is already reserved');
+    ELSE
+        -- Insert a new reservation
+        INSERT INTO Reservations (UserID, BookID, RentalDate, ExpirationDate)
+        VALUES (p_UserID, p_BookID, p_RentalDate, p_ExpirationDate);
+    END IF;
+END;
+/
+-– return a book
+
+CREATE OR REPLACE PROCEDURE ReturnBook (
+    p_ReservationID IN INT,
+    p_ReturnDate IN DATE
+) IS
+    v_ReservationCount INT;
+BEGIN
+    -- Check if the reservation exists
+    SELECT COUNT(*)
+    INTO v_ReservationCount
+    FROM Reservations
+    WHERE ReservationID = p_ReservationID;
+
+    IF v_ReservationCount = 0 THEN
+        RAISE_APPLICATION_ERROR(-20004, 'Reservation ID does not exist');
+    ELSE
+        -- Update the reservation with the return date
+        UPDATE Reservations
+        SET ReturnDate = p_ReturnDate
+        WHERE ReservationID = p_ReservationID;
+    END IF;
+END;
+/
+--Add new author
+
+CREATE OR REPLACE PROCEDURE AddNewAuthor (
+    p_FirstName IN NVARCHAR2,
+    p_LastName IN NVARCHAR2
+) IS
+BEGIN
+    -- Insert a new author
+    INSERT INTO Authors (FirstName, LastName)
+    VALUES (p_FirstName, p_LastName);
+END;/
+
+--Update author info
+
+CREATE OR REPLACE PROCEDURE UpdateAuthor (
+    p_AuthorID IN INT,
+    p_FirstName IN NVARCHAR2,
+    p_LastName IN NVARCHAR2
+) IS
+    v_AuthorCount INT;
+BEGIN
+    -- Check if the author exists
+    SELECT COUNT(*)
+    INTO v_AuthorCount
+    FROM Authors
+    WHERE AuthorID = p_AuthorID;
+
+    IF v_AuthorCount = 0 THEN
+        RAISE_APPLICATION_ERROR(-20006, 'Author ID does not exist');
+    ELSE
+        -- Update the author's information
+        UPDATE Authors
+        SET FirstName = p_FirstName, LastName = p_LastName
+        WHERE AuthorID = p_AuthorID;
+    END IF;
+END;
+/
+
+–-delete user
+
+CREATE OR REPLACE PROCEDURE DeleteUser (
+    p_UserID IN INT
+) IS
+    v_UserCount INT;
+BEGIN
+    -- Check if the user exists
+    SELECT COUNT(*)
+    INTO v_UserCount
+    FROM Users
+    WHERE UserID = p_UserID;
+
+    IF v_UserCount = 0 THEN
+        RAISE_APPLICATION_ERROR(-20007, 'User ID does not exist');
+    ELSE
+        -- Delete the user
+        DELETE FROM Users
+        WHERE UserID = p_UserID;
+    END IF;
+END;
+/
+
+
