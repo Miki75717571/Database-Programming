@@ -13,12 +13,15 @@ INSERT INTO Users (UserID, Email, Password, Phone, FirstName, LastName) VALUES
 
 -- Insert data into Authors
 INSERT INTO Authors (AuthorID, FirstName, LastName) VALUES
+(2, 'George', 'Orwell'),
 (3, 'Agatha', 'Christie'),
 (4, 'J.R.R.', 'Tolkien'),
 (5, 'Stephen', 'King');
 
 -- Insert data into Genres
 INSERT INTO Genres (GenreID, Name) VALUES
+(1, 'Classic'),
+(2, 'Dystopian'),
 (3, 'Mystery'),
 (4, 'Horror'),
 (5, 'Adventure');
@@ -58,8 +61,8 @@ INSERT INTO Reservations (ReservationID, UserID, BookID, RentalDate, ExpirationD
 
 -- Insert data into Fines
 INSERT INTO Fines (FineID, BookID, UserID, Amount, Paid) VALUES
-(1, 3, 3, 0.0, TRUE),
-(2, 4, 4, 0.0, TRUE),
-(3, 5, 5, 15.0, FALSE),
-(4, 6, 6, 0.0, TRUE),
-(5, 7, 7, 25.0, FALSE);
+(1, 3, 3, 0.0, 1),
+(2, 4, 4, 0.0, 1),
+(3, 5, 5, 15.0, 0),
+(4, 6, 6, 0.0, 1),
+(5, 7, 7, 25.0, 0);
