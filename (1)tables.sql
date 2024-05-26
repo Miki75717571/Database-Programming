@@ -1,4 +1,3 @@
-–-Tables
 CREATE TABLE Users (
   UserID INT PRIMARY KEY,
   Email NVARCHAR2(50),

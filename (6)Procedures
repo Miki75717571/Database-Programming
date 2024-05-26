@@ -23,7 +23,17 @@ BEGIN
         INSERT INTO Users (Email, Password, Phone, FirstName, LastName)
         VALUES (p_Email, p_Password, p_Phone, p_FirstName, p_LastName);
     END IF;
-END;/
+END;
+-- Test block
+BEGIN
+   AddNewUser(
+       p_Email => 'test@example.com',
+       p_Password => 'password123',
+       p_Phone => '1234567890',
+       p_FirstName => 'John',
+       p_LastName => 'Doe'
+   );
+END;
 
 -–update book info
 
@@ -48,7 +58,16 @@ BEGIN
         SET Title = p_Title, ReleaseDate = p_ReleaseDate, ISBN = p_ISBN
         WHERE BookID = p_BookID;
     END IF;
-END;/
+END;
+--test block
+BEGIN
+   UpdateBookInfo(
+       p_BookID => 12,
+       p_Title => 'Updated Title',
+       p_ReleaseDate => TO_DATE('2000-01-01', 'YYYY-MM-DD'),
+       p_ISBN => '1234567890123'
+   );
+END;
 
 -–Procedure to Reserve a Book
 
@@ -159,5 +178,46 @@ BEGIN
     END IF;
 END;
 /
+
+--Get reservations for user
+create or replace PROCEDURE GetReservationsForUser (
+    p_UserID IN INT
+) IS
+    CURSOR c_Reservations IS
+        SELECT *
+        FROM Reservations
+        WHERE UserID = p_UserID;
+    v_Reservation c_Reservations%ROWTYPE;
+BEGIN
+    OPEN c_Reservations;
+
+    LOOP
+        FETCH c_Reservations INTO v_Reservation;
+        EXIT WHEN c_Reservations%NOTFOUND;
+
+        -- Show information about the reservation
+        DBMS_OUTPUT.PUT_LINE('BookID: ' || v_Reservation.BookID || ', RentalDate: ' || v_Reservation.RentalDate || ', ExpirationDate: ' || v_Reservation.ExpirationDate);
+    END LOOP;
+
+    CLOSE c_Reservations;
+END;
+
+--Get books for author
+create or replace PROCEDURE GetBooksForAuthor(p_AuthorID IN INT) AS
+  CURSOR book_cursor IS
+    SELECT b.BookID, b.Title, b.ReleaseDate, b.ISBN
+    FROM Books b
+    INNER JOIN BooksAuthors ba ON b.BookID = ba.BookID
+    WHERE ba.AuthorID = p_AuthorID;
+  book_record book_cursor%ROWTYPE;
+BEGIN
+  OPEN book_cursor;
+  LOOP
+    FETCH book_cursor INTO book_record;
+    EXIT WHEN book_cursor%NOTFOUND;
+    DBMS_OUTPUT.PUT_LINE('BookID: ' || book_record.BookID || ', Title: ' || book_record.Title || ', ReleaseDate: ' || TO_CHAR(book_record.ReleaseDate, 'YYYY-MM-DD') || ', ISBN: ' || book_record.ISBN);
+  END LOOP;
+  CLOSE book_cursor;
+END;
 
 
