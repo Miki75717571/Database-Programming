@@ -1,7 +1,6 @@
-–-Tables
 CREATE TABLE Users (
   UserID INT PRIMARY KEY,
-  Email NVARCHAR(50),
+  Email NVARCHAR2(50),
   Password NVARCHAR2(50),
   Phone NVARCHAR2(15),
   FirstName NVARCHAR2(30),
@@ -31,14 +30,14 @@ CREATE TABLE Fines (
   BookID INT,
   UserID INT,
   Amount FLOAT,
-  Paid BOOLEAN,
+  Paid Number(1),
   FOREIGN KEY (BookID) REFERENCES Books(BookID),
   FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
 
 CREATE TABLE Genres (
   GenreID INT PRIMARY KEY,
-  Name NVARCHAR(20)
+  Name NVARCHAR2(20)
 );
 
 CREATE TABLE BooksGenres (
